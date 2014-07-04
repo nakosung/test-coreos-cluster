@@ -1,10 +1,13 @@
 [Unit]
 Description=dummyweb presence service
 BindsTo=dummyweb-http.1.service
+After=dummyweb-http.1.service
 
 [Service]
+TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull nakosung/elb-presence
 ExecStart=/bin/bash -c "ELB_NAME=$(/usr/bin/etcdctl get /ELB_NAME) && AWS_ACCESS_KEY=$(/usr/bin/etcdctl get /AWS_ACCESS_KEY) && AWS_SECRET_KEY=$(/usr/bin/etcdctl get /AWS_SECRET_KEY) && AWS_REGION=$(/usr/bin/etcdctl get /AWS_REGION) && exec /usr/bin/docker run --rm --name %n -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY -e AWS_SECRET_KEY=$AWS_SECRET_KEY -e AWS_REGION=$AWS_REGION -e ELB_NAME=$ELB_NAME nakosung/elb-presence"
-ExecStop=/usr/bin/docker kill %n
+ExecStop=/usr/bin/docker rm -f %n
 
 [X-Fleet]
 X-ConditionMachineOf=dummyweb-http.1.service

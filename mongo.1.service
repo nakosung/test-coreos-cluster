@@ -1,11 +1,13 @@
 [Unit]
 Description=mongo
+After=docker.service
 
 [Service]
-ExecPre=/usr/bin/docker pull mongo
-ExecStart=/usr/bin/docker run --rm --name %n -p 27017:27017 mongo
+TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull mongo
+ExecStart=/usr/bin/docker run --rm --name %n -p 27017:27017 mongo mongod --smallfiles
 ExecStartPost=/bin/bash -c "HOST_IP=$(/bin/ifconfig eth0 | awk '/inet /{print $2}') && exec /usr/bin/etcdctl set /mongo/%n $HOST_IP"
-ExecStop=/usr/bin/docker kill %n
+ExecStop=/usr/bin/docker rm -f %n
 ExecStopPost=/usr/bin/etcdctl rm /mongo/%n
 
 [X-Fleet]

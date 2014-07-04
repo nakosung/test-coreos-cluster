@@ -1,10 +1,12 @@
 [Unit]
 Description=dummyweb
+After=docker.service
 
 [Service]
+TimeoutStartSec=0
 ExecStartPre=/usr/bin/docker pull nakosung/dummyweb
-ExecStart=/usr/bin/docker run --rm --name %n -p 8080:8080 nakosung/dummyweb
-ExecStop=/usr/bin/docker kill %n
+ExecStart=/usr/bin/docker run --name %n -p 8080:8080 nakosung/dummyweb
+ExecStop=/usr/bin/docker rm -f %n
 
 [X-Fleet]
 X-Conflicts=dummyweb-http.*.service

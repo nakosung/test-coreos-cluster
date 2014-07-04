@@ -1,10 +1,13 @@
 [Unit]
 Description=elasticsearch
+After=docker.service
 
 [Service]
+TimeoutStartSec=0
+ExecStartPre=/usr/bin/docker pull dockerfile/elasticsearch
 ExecStart=/usr/bin/docker run --rm -p 9200:9200 -p 9300:9300 --name %n dockerfile/elasticsearch
 ExecStartPost=/bin/bash -c "HOST_IP=$(/bin/ifconfig eth0 | awk '/inet /{print $2}') && exec /usr/bin/etcdctl set /elasticsearch/%n $HOST_IP"
-ExecStop=/usr/bin/docker kill %n
+ExecStop=/usr/bin/docker rm -f %n
 ExecStopPost=/usr/bin/etcdctl rm /elasticsearch/%n
 
 [X-Fleet]
