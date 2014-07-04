@@ -1,0 +1,11 @@
+[Unit]
+Description=kibana
+
+[Service]
+ExecStart=/bin/bash -c "ES_HOST=$(/usr/bin/etcdctl get /elasticsearch/elasticsearch.1.service) && exec /usr/bin/docker run --rm -e ES_HOST=$ES_HOST -e ES_PORT=9200 -p 80:80 --name %n cactusbone/kibana"
+ExecStop=/usr/bin/docker kill %n
+
+[X-Fleet]
+X-Conflicts=kibana.*.service
+X-Conflicts=dummyweb-http.*.service
+

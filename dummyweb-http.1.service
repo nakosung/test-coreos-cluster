@@ -1,0 +1,10 @@
+[Unit]
+Description=dummyweb
+
+[Service]
+ExecStartPre=/usr/bin/docker pull nakosung/dummyweb
+ExecStart=/usr/bin/docker run --rm --name dummyweb-1 -p 8080:8080 nakosung/dummyweb
+ExecStop=/usr/bin/docker kill dummyweb-1
+
+[X-Fleet]
+X-Conflicts=dummyweb-http.*.service
