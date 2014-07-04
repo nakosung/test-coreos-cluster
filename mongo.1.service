@@ -2,6 +2,7 @@
 Description=mongo
 
 [Service]
+ExecPre=/usr/bin/docker pull mongo
 ExecStart=/usr/bin/docker run --rm --name %n -p 27017:27017 mongo
 ExecStartPost=/bin/bash -c "HOST_IP=$(/bin/ifconfig eth0 | awk '/inet /{print $2}') && exec /usr/bin/etcdctl set /mongo/%n $HOST_IP"
 ExecStop=/usr/bin/docker kill %n

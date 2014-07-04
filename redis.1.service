@@ -2,6 +2,7 @@
 Description=redis
 
 [Service]
+ExecPre=/usr/bin/docker pull redis
 ExecStart=/usr/bin/docker run --rm --name %n -p 6379:6379 redis
 ExecStartPost=/bin/bash -c "HOST_IP=$(/bin/ifconfig eth0 | awk '/inet /{print $2}') && exec /usr/bin/etcdctl set /redis/%n $HOST_IP"
 ExecStop=/usr/bin/docker kill %n
